@@ -5,21 +5,38 @@ pool:
   vmImage: 'windows-latest' # Recomendado para pruebas de UI en Windows
 
 steps:
+# 1. Instalar el SDK de .NET
 - task: UseDotNet@2
   inputs:
+    packageType: 'sdk'
     version: '10.0.x' # Ajusta a la versión que uses
 
-- script: dotnet build --configuration Release
-  displayName: 'Compilar proyecto'
-
+# 2. Restaurar dependencias de NuGet
 - task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
+  inputs:
+    command: 'restore'
+    projects: '**/*Test.csproj'
+
+# 3. Compilar el proyecto
+- task: DotNetCoreCLI@2
+  displayName: 'Compile project'
+  inputs:
+    command: 'build'
+    projects: '**/*Test.csproj'
+    arguments: '--configuration Release'
+
+# 4. Ejecutar las pruebas con NUnit
+- task: DotNetCoreCLI@2
+  displayName: 'Run tests'
   inputs:
     command: 'test'
     projects: '**/*Test.csproj'
     arguments: '--configuration Release --logger "nunit;LogFilePath=test-results/results.xml"'
-  displayName: 'Ejecutar pruebas NUnit'
 
+# 5. Publicar pruebas
 - task: PublishTestResults@2
+  displayName: 'Publish test result'
   condition: always()
   inputs:
     testResultsFormat: 'NUnit'
