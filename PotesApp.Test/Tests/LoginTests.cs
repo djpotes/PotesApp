@@ -12,6 +12,8 @@ public class LoginTests
     [SetUp]
     public void Setup()
     {
+        var options = new ChromeOptions();
+        options.AddArguments("--headless");
         _driver = new ChromeDriver();
         _driver.Manage().Window.Maximize();
         _driver.Navigate().GoToUrl("https://practicetestautomation.com/practice-test-login/");
