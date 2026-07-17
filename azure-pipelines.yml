@@ -16,5 +16,13 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*Test.csproj'
-    arguments: '--configuration Release'
+    arguments: '--configuration Release --logger "nunit;LogFilePath=test-results/results.xml"'
   displayName: 'Ejecutar pruebas NUnit'
+
+- task: PublishTestResults@2
+  condition: always()
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: '**/results.xml'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    testRunTitle: 'NUnit Test Results'
